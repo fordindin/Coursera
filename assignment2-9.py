@@ -3,18 +3,42 @@
 import sys
 #k = [ '0011', '1111', '0101', '1100', '0001' ]
 
-kcc = [ '0011', '1010', '0110' , '1001', 0]
-xm = [ '0110', '0101', '1110', '1101' ]
+kcc = ['0b1010', '0b100', '0b1', '0b1000', '0b1']
+kset = [['0b1010', '0b1110', '0b1011', '0b10', '0b1011'], ['0b1010', '0b1110', '0b1011', '0b10', '0b1011'], ['0b1010', '0b1100', '0b1001', '0b0', '0b1001'], ['0b1010', '0b1100', '0b1001', '0b0', '0b1001'], ['0b1010', '0b101', '0b0', '0b1001', '0b0'], ['0b1010', '0b101', '0b0', '0b1001', '0b0'], ['0b1010', '0b101', '0b0', '0b1001', '0b0'], ['0b1010', '0b1111', '0b1010', '0b11', '0b1010'], ['0b1010', '0b1111', '0b1010', '0b11', '0b1010'], ['0b1010', '0b1010', '0b1111', '0b110', '0b1111'], ['0b1010', '0b1010', '0b1111', '0b110', '0b1111'], ['0b1010', '0b111', '0b10', '0b1011', '0b10'], ['0b1010', '0b111', '0b10', '0b1011', '0b10'], ['0b1010', '0b1', '0b100', '0b1101', '0b100'], ['0b1010', '0b1', '0b100', '0b1101', '0b100'], ['0b1010', '0b1011', '0b1110', '0b111', '0b1110'], ['0b1010', '0b1011', '0b1110', '0b111', '0b1110'], ['0b1010', '0b110', '0b11', '0b1010', '0b11'], ['0b1010', '0b110', '0b11', '0b1010', '0b11'], ['0b1010', '0b11', '0b110', '0b1111', '0b110'], ['0b1010', '0b11', '0b110', '0b1111', '0b110'], ['0b1010', '0b10', '0b111', '0b1110', '0b111'], ['0b1010', '0b10', '0b111', '0b1110', '0b111'], ['0b1010', '0b1101', '0b1000', '0b1', '0b1000'], ['0b1010', '0b1101', '0b1000', '0b1', '0b1000'], ['0b1010', '0b0', '0b101', '0b1100', '0b101'], ['0b1010', '0b0', '0b101', '0b1100', '0b101'], ['0b1010', '0b1001', '0b1100', '0b101', '0b1100'], ['0b1010', '0b1001', '0b1100', '0b101', '0b1100'], ['0b1010', '0b1000', '0b1101', '0b100', '0b1101'], ['0b1010', '0b1000', '0b1101', '0b100', '0b1101'], ['0b1010', '0b100', '0b1', '0b1000', '0b1'], ['0b1010', '0b100', '0b1', '0b1000', '0b1']]
+k = [ '0b1010', '0b101', '0b0', '0b1001', '0b0' ]
+xm = [ '0110', '0101', '1110' ] #, '1101' ]
 xc = [ '0011', '1010', '0110' ]
 
 def F(k, x):
-		t = int(k[0], 2)
+		try:
+				t = int(k[0], 2)
+		except TypeError:
+				print k[0]
+				sys.exit(0)
 		xors = [0]
 		for i in range(1,5):
 				if x[i-1] == '1':
 						xors.append(i)
 						t = t^int(k[i],2)
 		return bin(t)
+
+
+for i in range(len(xm)):
+		if F(k, xm[i]) != bin(int(xc[i],2)):
+				print "Fail"
+
+
+print F(k, '1101')
+sys.exit(0)
+acc = {}
+for k in kset:
+		for i in range(len(xm)):
+				if F(k, xm[i]) != bin(int(xc[i],2)): break
+				else:
+						acc.setdefault(tuple(k),0)
+						acc[tuple(k)]+=1
+
+print acc
 
 """
 				'1': bin(int(xc[0],2)),
@@ -49,11 +73,13 @@ keymap = {
 				'0x1x2':'0x1x2',
 				}
 
+counter = 0
 for k0 in keywalk():
 		for k1 in keywalk():
 				for k2 in keywalk():
 						for k3 in keywalk():
 								for k4 in keywalk():
+										counter +=1
 										if int(k2,2)^int(k3,2) == int(xor_combos['0x1'],2):
 												candidates.setdefault('2x3',[])
 												candidates['2x3'].append((k2,k3,))
@@ -78,10 +104,31 @@ c1234_norm_14 = set([ (c[0],c[3],) for c in candidates['1x2x3x4']])
 best_23_candidates = c1234_norm_23.intersection(candidates['2x3'])
 best_14_candidates = c1234_norm_14.intersection(candidates['1x4'])
 
+
+tc = []
 for c23 in best_23_candidates:
 		for c14 in best_14_candidates:
 				if (c14[0], c23[0], c23[1], c14[1],) in candidates['1x2x3x4']:
-						print (c14[0], c23[0], c23[1], c14[1],)
+						tc.append((c14[0], c23[0], c23[1], c14[1],))
+
+tc1 = []
+for t in tc:
+		for c012 in candidates['0x1x2']:
+				if (c012[1], c012[2],) == (t[0],t[1]):
+						tc1.append((c012[0],t[0],t[1],t[2],t[3],))
+
+retval = []
+for k in tc1:
+		for m in xm:
+				if F(k, m) != bin(int(xc[xm.index(m)], 2)):
+						break
+				else:
+						retval.append(list(k))
+						
+
+print retval
+
+"""
 sys.exit(0)
 
 
@@ -106,3 +153,4 @@ for mk in keywalk():
 
 #print F(kcopy, xm[2]) == bin(int(xc[2], 2))
 #print bin(int(xc[2],2))
+"""

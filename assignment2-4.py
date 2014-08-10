@@ -9,5 +9,7 @@ vals = (
 		( ("2d1cfa42","c0b1d266"),("eea6e3dd","b2146dd0",), ),
 )
 
-for e in vals:
-		print cl.msg2bs(e[0][0])
+for v in vals:
+		print cl.sxor(v[0][0], v[1][0])
+		print cl.sxor(v[1][0], v[1][1])
+		print 
